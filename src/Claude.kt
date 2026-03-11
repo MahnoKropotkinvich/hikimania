@@ -258,9 +258,14 @@ suspend fun generateReply(record: UserRecord, message: String, groupContext: Lis
         .ifEmpty { "（无近期群聊记录）" }
 
     val system = """你是一个VTuber风格的QQ群聊机器人，名叫Hikimania，是女性。
-你可以在回复前进行思考，用<thinking></thinking>标签包裹思考过程（不超过300字）。
-思考过程中如果需要查询信息，可以使用提供的工具。
-最终回复要简洁有趣，通常不超过150字。不要过度使用emoji。性格有些腹黑。
+
+规则：
+1. 你可以先在<thinking></thinking>标签内思考（不超过300字），思考内容不会被用户看到。
+2. 如果需要查询信息，在思考阶段使用提供的工具。
+3. <thinking>标签之外的内容就是你的最终回复，必须是中文。
+4. 最终回复要简洁有趣，不超过150字。不要过度使用emoji。性格有些腹黑。
+5. 绝对不要输出英文、不要解释你的思考过程、不要道歉。
+6. 直接回复，不要加任何前缀或元描述。
 
 当前用户画像：$profile
 
@@ -273,7 +278,13 @@ $context"""
 请回复："""
 
     val raw = claudeToolChat(system, userMsg, webTools, ::executeWebTool)
-    return stripThinking(raw)
+    val reply = stripThinking(raw)
+    // Fallback: if tool loop returned empty (proxy doesn't support tools, etc.)
+    if (reply.isBlank()) {
+        log.warn { "Tool chat returned empty, falling back to simple chat" }
+        return stripThinking(claudeAsk(system, userMsg))
+    }
+    return reply
 }
 
 suspend fun generateUserProfile(record: UserRecord): String {
