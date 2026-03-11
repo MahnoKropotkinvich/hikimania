@@ -73,7 +73,7 @@ suspend fun claudeChat(system: String, messages: List<ClaudeMessage>): String {
             return response.body<ClaudeResponse>().content.firstOrNull()?.text ?: ""
         } catch (e: Exception) {
             if (e.message?.contains("after $MAX_RETRIES attempts") == true) throw e
-            log.warn { "API call failed, attempt ${attempt + 1}/$MAX_RETRIES: ${e.message}" }
+            log.warn { "API call failed, attempt ${attempt + 1}/$MAX_RETRIES: ${e::class.simpleName}: ${e.message}" }
             if (attempt < MAX_RETRIES - 1) {
                 delay(RETRY_DELAYS[attempt])
             } else {

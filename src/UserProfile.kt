@@ -121,8 +121,9 @@ fun CoroutineScope.launchProfileActor() {
         if (count > 0) log.info { "Flushed $count records to RocksDB" }
     }
 
-    // Main actor coroutine
-    launch(Dispatchers.IO) {
+    // Main actor coroutine — SupervisorJob so child failures (e.g. profile generation)
+    // don't kill the actor loop
+    launch(Dispatchers.IO + SupervisorJob()) {
         log.info { "Profile actor started" }
 
         // Periodic flush ticker

@@ -7,21 +7,26 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withTimeout
 
-private val log = KotlinLogging.logger {}
+private val log = KotlinLogging.logger("HealthCheck")
 
-suspend fun runHealthCheck(): Boolean {
+suspend fun runHealthCheck(): Boolean = coroutineScope {
     log.info { "Running health checks..." }
-    
-    val claudeOk = checkClaudeAPI()
-    val napcatOk = checkNapCat()
-    
-    return if (claudeOk && napcatOk) {
-        log.info { "✓ All health checks passed" }
+
+    val claude = async { checkClaudeAPI() }
+    val napcat = async { checkNapCat() }
+
+    val claudeOk = claude.await()
+    val napcatOk = napcat.await()
+
+    if (claudeOk && napcatOk) {
+        log.info { "All health checks passed" }
         true
     } else {
-        log.error { "✗ Health checks failed. Please fix configuration before continuing." }
+        log.error { "Health checks failed. Fix configuration before continuing." }
         false
     }
 }
