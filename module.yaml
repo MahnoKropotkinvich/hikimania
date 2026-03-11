@@ -18,6 +18,9 @@ dependencies:
   - io.github.oshai:kotlin-logging-jvm:7.0.3
   - ch.qos.logback:logback-classic:1.5.18
 
+  # HTML parsing (web fetch)
+  - org.jsoup:jsoup:1.18.3
+
 settings:
   kotlin:
     serialization: json
