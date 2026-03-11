@@ -1,0 +1,25 @@
+product: jvm/app
+
+dependencies:
+  # Ktor Client
+  - io.ktor:ktor-client-core:3.2.0
+  - io.ktor:ktor-client-cio:3.2.0
+  - io.ktor:ktor-client-websockets:3.2.0
+  - io.ktor:ktor-client-content-negotiation:3.2.0
+  - io.ktor:ktor-serialization-kotlinx-json:3.2.0
+
+  # Coroutines
+  - org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2
+
+  # RocksDB
+  - org.rocksdb:rocksdbjni:10.2.1
+
+  # Logging
+  - io.github.oshai:kotlin-logging-jvm:7.0.3
+  - ch.qos.logback:logback-classic:1.5.18
+
+settings:
+  kotlin:
+    serialization: json
+  jvm:
+    release: 21
